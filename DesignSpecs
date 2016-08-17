@@ -1,0 +1,20 @@
+S - set of states
+	t - Time
+	ax - x-acceleration
+	ay - y-acceleration
+	az - z-acceleration
+A - set of actions
+y - (gamma) discount factor
+R(s,a,s') - reward received by taking action a and transitioning from s to s'
+T(s'|s,a) - probability of transitioning to s' from s after taking action a
+
+At a given timestep t
+receive s_t
+execute a_t
+transition to s_t+1 and get a reward r_t
+
+Q(s,a)
+
+Observe a transition s,a,r,s',a'
+compute TD error: d = r+y*Q(s',a')-Q(s,a)
+update Q: Q(s,a) = Q(s,a)+alpha*d
