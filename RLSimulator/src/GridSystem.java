@@ -48,23 +48,37 @@ public class GridSystem extends RLSystem {
 		m_pstateCurrState = m_prggsStateGrid[iStartXCoord][iStartYCoord];
 		
 		m_pactorActor = new GridActor((GridState) m_pstateCurrState);
+		
+		m_prgactActionSet.add(new Action("Up"));
+		m_prgactActionSet.add(new Action("Down"));
+		m_prgactActionSet.add(new Action("Left"));
+		m_prgactActionSet.add(new Action("Right"));
 	}
 	
-	public boolean FCanTransition(Action pactCurrAction) {
-		GridAction pgaCurrGridAction = (GridAction) pactCurrAction;
+	public boolean FTransition(Action pactCurrAction) {
+		if (super.FTransition(pactCurrAction))
+			return true;
+		
+		// super method will check if action is valid, so here action should be valid
+		return FTransitionFcn(pactCurrAction);
+	}
+	
+	protected boolean FTransitionFcn(Action pactCurrAction) {
+		// we already know whether or not action is valid from FTransition()
+		State pstateCurrState = m_pstateCurrState;
 		int iXCoord = ((GridState) m_pstateCurrState).IGetXCoord();
 		int iYCoord = ((GridState) m_pstateCurrState).IGetYCoord();
 		int iXChange = 0;
 		int iYChange = 0;
 		
-		switch(pgaCurrGridAction.PDirGetActionAsDir()) {
-		case Up:
+		switch(pactCurrAction.StGetName()) {
+		case "Up":
 			iYChange = -1;
-		case Down:
+		case "Down":
 			iYChange = 1;
-		case Left:
+		case "Left":
 			iXChange = -1;
-		case Right:
+		case "Right":
 			iXChange = 1;
 		}
 		
@@ -74,39 +88,13 @@ public class GridSystem extends RLSystem {
 			return false;
 		if (!m_prgfStateValidGrid[iXCoord+iXChange][iYCoord+iYChange])
 			return false;
-		
-		return true;
-	}
-	
-	public void Transition(Action pactCurrAction) {
-		GridState pstateCurrState = (GridState) m_pstateCurrState;
-		GridAction pgaCurrGridAction = (GridAction) pactCurrAction;
-		
-		if (!FCanTransition(pactCurrAction))
-			// TODO: create new exception for impossible action
-			throw new IllegalArgumentException("Action not allowed.");
-		
-		int iXCoord = ((GridState) m_pstateCurrState).IGetXCoord();
-		int iYCoord = ((GridState) m_pstateCurrState).IGetYCoord();
-		int iXChange = 0;
-		int iYChange = 0;
-		
-		switch(pgaCurrGridAction.PDirGetActionAsDir()) {
-		case Up:
-			iYChange = -1;
-		case Down:
-			iYChange = 1;
-		case Left:
-			iXChange = -1;
-		case Right:
-			iXChange = 1;
-		}
-		
+			
 		m_pstateCurrState = m_prggsStateGrid[iXCoord+iXChange][iYCoord+iYChange];
-		GridState pstateNextState = (GridState) m_pstateCurrState;
+		State pstateNextState = m_pstateCurrState;
 		
 		m_pactorActor.SetCurrState(m_pstateCurrState);
 		m_pactorActor.AddReward(DGetRewardFcn(pstateCurrState, pactCurrAction, pstateNextState));
+		return true;
 	}
 	
 	public double DGetRewardFcn(State pstatePrevState, Action pactCurrAction, State pstateCurrState) {

@@ -22,12 +22,8 @@ public abstract class RLSystem {
 		return m_pstateCurrState;
 	}
 	
-	public boolean FCanTransition(Action pactCurrAction) {
-		return m_prgactActionSet.contains(pactCurrAction);
-	}
-	
 	public boolean FTransition(Action pactCurrAction) {
-		if (!this.FCanTransition(pactCurrAction))
+		if (!this.FActionIsValid(pactCurrAction))
 			return false;
 		if (!FTransitionFcn(pactCurrAction))
 			return false;
