@@ -47,8 +47,10 @@ public class GridState extends State{
 	}
 	
 	public boolean equals(Object pobjOtherState) {
-		State pstateOtherState = (State) pobjOtherState;
-		return (this.compareTo(pstateOtherState)==0);
+		if (this.getClass().equals(pobjOtherState.getClass()))
+			return (this.compareTo((State) pobjOtherState)==0);
+		else
+			return false;
 	}
 
 }
