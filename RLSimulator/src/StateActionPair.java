@@ -38,4 +38,11 @@ public class StateActionPair implements Comparable<StateActionPair>{
 		else
 			return this.PActGetAction().compareTo(psapOtherSAP.m_pactCurrAction);
 	}
+	
+	public boolean equals(Object pobjOther) {
+		if (pobjOther.getClass().equals(this.getClass()))
+			return (this.compareTo((StateActionPair) pobjOther)==0);
+		else
+			return false;
+	}
 }
