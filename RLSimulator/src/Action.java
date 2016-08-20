@@ -1,5 +1,5 @@
 
-public class Action {
+public class Action implements Comparable<Action>{
 	protected String m_stName;
 	
 	public Action() {
@@ -16,5 +16,10 @@ public class Action {
 	
 	public void SetName(String stName) {
 		m_stName = stName;
+	}
+
+	@Override
+	public int compareTo(Action pactOtherAct) {
+		return this.StGetName().compareTo(pactOtherAct.StGetName());
 	}
 }
