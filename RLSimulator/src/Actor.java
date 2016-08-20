@@ -1,5 +1,5 @@
 
-public abstract class Actor {
+public abstract class Actor implements Comparable<Actor>{
 	protected State m_pstateCurrState;
 	protected double m_dTotalReward;
 	protected RLSystem m_prlsCurrSystem;

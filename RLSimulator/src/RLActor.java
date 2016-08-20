@@ -84,4 +84,16 @@ public class RLActor extends Actor {
 		
 		return psapNextSAP;
 	}
+
+	@Override
+	public int compareTo(Actor pactorOther) {
+		return -1;
+	}
+	
+	public boolean equals(Object pobjOther) {
+		if (this.getClass().equals(pobjOther.getClass()))
+			return this.compareTo((Actor) pobjOther)==0;
+		else
+			return false;
+	}
 }
