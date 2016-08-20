@@ -5,7 +5,7 @@ public abstract class RLSystem {
 	protected State m_pstateCurrState;
 	protected int m_cNumStates;
 	protected double m_dTimeStep;
-	protected Actor m_pactorActor;
+	protected RLActor m_prlactorActor;
 	protected List<State> m_prgstateAbsorbingStates;
 	protected Set<Action> m_prgactActionSet;
 	
@@ -13,7 +13,7 @@ public abstract class RLSystem {
 		m_pstateCurrState = null;
 		m_cNumStates = 0;
 		m_dTimeStep = -1;
-		m_pactorActor = null;
+		m_prlactorActor = null;
 		m_prgstateAbsorbingStates = null;
 		m_prgactActionSet = null;
 	}
@@ -25,9 +25,7 @@ public abstract class RLSystem {
 	public boolean FTransition(Action pactCurrAction) {
 		if (!this.FActionIsValid(pactCurrAction))
 			return false;
-		if (!FTransitionFcn(pactCurrAction))
-			return false;
-		return true;
+		return FTransitionFcn(pactCurrAction);
 	}
 	
 	protected boolean FTransitionFcn(Action pactCurrAction) {
