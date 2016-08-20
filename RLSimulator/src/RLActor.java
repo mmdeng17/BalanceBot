@@ -1,12 +1,11 @@
-import java.util.Set;
+import java.util.Map;
 
 public class RLActor extends Actor {
-	protected double[][] m_rgdQFcn;
-	
+	protected Map<StateActionPair, Double> m_mpsapdQFcn;
 	
 	public RLActor() {
 		super();
-		m_rgdQFcn = null;
+		m_mpsapdQFcn = null;
 	}
 	
 	public void Init() {
