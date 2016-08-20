@@ -47,7 +47,8 @@ public class GridSystem extends RLSystem {
 		
 		m_pstateCurrState = m_prggsStateGrid[iStartXCoord][iStartYCoord];
 		
-		m_pactorActor = new GridActor((GridState) m_pstateCurrState);
+		m_prlactorActor = new RLActor();
+		m_prlactorActor.SetCurrState(m_pstateCurrState);
 		
 		m_prgactActionSet.add(new Action("Up"));
 		m_prgactActionSet.add(new Action("Down"));
@@ -59,7 +60,9 @@ public class GridSystem extends RLSystem {
 		if (super.FTransition(pactCurrAction))
 			return true;
 		
-		// super method will check if action is valid, so here action should be valid
+		if (!this.FActionIsValid(pactCurrAction))
+			return false;
+
 		return FTransitionFcn(pactCurrAction);
 	}
 	
@@ -92,8 +95,8 @@ public class GridSystem extends RLSystem {
 		m_pstateCurrState = m_prggsStateGrid[iXCoord+iXChange][iYCoord+iYChange];
 		State pstateNextState = m_pstateCurrState;
 		
-		m_pactorActor.SetCurrState(m_pstateCurrState);
-		m_pactorActor.AddReward(DGetRewardFcn(pstateCurrState, pactCurrAction, pstateNextState));
+		m_prlactorActor.SetCurrState(m_pstateCurrState);
+		m_prlactorActor.AddReward(DGetRewardFcn(pstateCurrState, pactCurrAction, pstateNextState));
 		return true;
 	}
 	
