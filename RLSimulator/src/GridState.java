@@ -1,5 +1,5 @@
 
-public class GridState extends State {
+public class GridState extends State{
 	private int m_iXCoord;
 	private int m_iYCoord;
 	
@@ -27,24 +27,28 @@ public class GridState extends State {
 		return m_iYCoord;
 	}
 	
-	public int compareTo(GridState pstateOtherState) {
+	public int compareTo(State pstateOtherState) {
 		// TODO: figure out function that also takes into account magnitude of differences in x and y coords
-		if (this.IGetXCoord()==pstateOtherState.IGetXCoord() && this.IGetYCoord()==pstateOtherState.IGetYCoord())
+		GridState pgridstateOtherState = (GridState) pstateOtherState;
+		
+		if (this.IGetXCoord()==pgridstateOtherState.IGetXCoord() && this.IGetYCoord()==pgridstateOtherState.IGetYCoord())
 			return 0;
 		
-		if (this.IGetXCoord()<pstateOtherState.IGetXCoord())
+		if (this.IGetXCoord()<pgridstateOtherState.IGetXCoord())
 			return -1;
-		else if (this.IGetXCoord()>pstateOtherState.IGetXCoord())
+		else if (this.IGetXCoord()>pgridstateOtherState.IGetXCoord())
 			return 1;
 		else {
-			if (this.IGetYCoord()<pstateOtherState.IGetYCoord())
+			if (this.IGetYCoord()<pgridstateOtherState.IGetYCoord())
 				return -1;
 			else
 				return 1;
 		}
 	}
 	
-	public boolean equals(GridState pstateOtherState) {
+	public boolean equals(Object pobjOtherState) {
+		State pstateOtherState = (State) pobjOtherState;
 		return (this.compareTo(pstateOtherState)==0);
 	}
+
 }
