@@ -22,4 +22,11 @@ public class Action implements Comparable<Action>{
 	public int compareTo(Action pactOtherAct) {
 		return this.StGetName().compareTo(pactOtherAct.StGetName());
 	}
+	
+	public boolean equals(Object pobjOther) {
+		if (this.getClass().equals(pobjOther.getClass()))
+			return this.compareTo((Action) pobjOther)==0;
+		else
+			return false;
+	}
 }
