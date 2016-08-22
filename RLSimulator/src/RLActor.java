@@ -1,3 +1,4 @@
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -17,7 +18,7 @@ public class RLActor extends Actor {
 	}
 	
 	public void Init() {
-		
+		m_mpsapdQFcn = new HashMap<StateActionPair, Double>();
 	}
 	
 	public double DGetGamma() {
@@ -49,7 +50,27 @@ public class RLActor extends Actor {
 	}
 	
 	public Action PActGetPolicy() {
-		return null;
+		Action pactMaxAction = null;
+		double dMaxQ = Double.NEGATIVE_INFINITY;
+		double dCurrQ;
+		Set<Action> prgactActionSet = this.PRlsGetCurrSystem().pactGetActionSet();
+		for (Iterator<Action> pitActIt = prgactActionSet.iterator(); pitActIt.hasNext(); ) {
+			StateActionPair psapPossNextSAP = new StateActionPair(this.PStateGetCurrState(),pitActIt.next());
+			
+			if (m_mpsapdQFcn.containsKey(psapPossNextSAP))
+				dCurrQ = m_mpsapdQFcn.get(psapPossNextSAP);
+			else {
+				m_mpsapdQFcn.put(psapPossNextSAP, m_dDefaultQ);
+				dCurrQ = m_dDefaultQ;
+			}
+			
+			if (dCurrQ>dMaxQ) {
+				dMaxQ = dCurrQ;
+				pactMaxAction = psapPossNextSAP.PActGetAction();
+			}
+		}
+		
+		return pactMaxAction;
 	}
 	
 	public void UpdateQFcn(StateActionPair psapCurrSAP, double dCurrReward, State pstatenextState) {
@@ -66,15 +87,17 @@ public class RLActor extends Actor {
 	
 	protected StateActionPair PsapGetNextSAP(State pstateNextState) {
 		double dCurrRew = m_dDefaultQ;
-		double dMaxRew = Double.MIN_VALUE;
+		double dMaxRew = Double.NEGATIVE_INFINITY;
 		StateActionPair psapNextSAP = null;
 		Set<Action> prgactActionSet = this.PRlsGetCurrSystem().pactGetActionSet();
 		for (Iterator<Action> pitActIt = prgactActionSet.iterator(); pitActIt.hasNext(); ) {
 			StateActionPair psapPossNextSAP = new StateActionPair(pstateNextState,pitActIt.next());
 			if (m_mpsapdQFcn.containsKey(psapPossNextSAP))
 				dCurrRew = m_mpsapdQFcn.get(psapPossNextSAP);
-			else
+			else {
+				m_mpsapdQFcn.put(psapPossNextSAP, m_dDefaultQ);
 				dCurrRew = m_dDefaultQ;
+			}
 			
 			if (dCurrRew>dMaxRew) {
 				dMaxRew = dCurrRew;
