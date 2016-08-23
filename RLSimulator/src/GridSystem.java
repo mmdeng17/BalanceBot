@@ -20,6 +20,8 @@ public class GridSystem extends RLSystem {
 	}
 	
 	public void Init(int cXSize, int cYSize, int iStartXCoord, int iStartYCoord, int[] rgiASXCoord, int[] rgiASYCoord) {
+		super.Init();
+		
 		if (cXSize<0)
 			throw new IllegalArgumentException("Invalid grid x size.");
 		if (cYSize<0)
@@ -47,13 +49,13 @@ public class GridSystem extends RLSystem {
 		
 		m_pstateCurrState = m_prggsStateGrid[iStartXCoord][iStartYCoord];
 		
-		m_prlactorActor = new RLActor();
-		m_prlactorActor.SetCurrState(m_pstateCurrState);
-		
 		m_prgactActionSet.add(new Action("Up"));
 		m_prgactActionSet.add(new Action("Down"));
 		m_prgactActionSet.add(new Action("Left"));
 		m_prgactActionSet.add(new Action("Right"));
+		
+		m_prlactorActor.SetCurrState(m_pstateCurrState);
+		m_prlactorActor.SetCurrSystem(this);
 	}
 	
 	public boolean FTransition(Action pactCurrAction) {
@@ -109,4 +111,27 @@ public class GridSystem extends RLSystem {
 		
 		return dCurrReward;
 	}
+	
+	public String toString() {
+		StringBuilder psbOutSB = new StringBuilder();
+		psbOutSB.append("t = ");
+		psbOutSB.append(m_dTimeStep);
+		psbOutSB.append("\n");
+
+		for (int iX = 0; iX<m_cXSize; iX++) {
+			for (int iY = 0; iY<m_cYSize; iY++) {
+				if (m_prggsStateGrid[iX][iY].equals(m_prlactorActor.PStateGetCurrState()))
+					psbOutSB.append("|o");
+				// TODO: fix this
+				else if (m_prgstateAbsorbingStates.contains(m_prggsStateGrid[iX][iY]))
+					psbOutSB.append("|x");
+				else
+					psbOutSB.append("| ");
+			}
+			psbOutSB.append("|\n");
+		}
+		
+		return psbOutSB.toString();
+	}
+	
 }

@@ -4,17 +4,19 @@ public class GridState extends State{
 	private int m_iYCoord;
 	
 	public GridState() {
-		super();
-		m_iXCoord = 0;
-		m_iYCoord = 0;
+		super(true, true);
+		m_iXCoord = -1;
+		m_iYCoord = -1;
 	}
 	
 	public GridState(int iXCoord, int iYCoord) {
+		super(true, true);
+		
 		if (iXCoord<0)
 			throw new IllegalArgumentException("Invalid x coordinate.");
 		if (iYCoord<0)
 			throw new IllegalArgumentException("Invalid y coordinate.");
-	
+		
 		m_iXCoord = iXCoord;
 		m_iYCoord = iYCoord;
 	}
@@ -53,4 +55,7 @@ public class GridState extends State{
 			return false;
 	}
 
+	public String toString() {
+		return "(" + m_iXCoord + ", " + m_iYCoord + ")";
+	}
 }

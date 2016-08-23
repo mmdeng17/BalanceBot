@@ -29,4 +29,8 @@ public class Action implements Comparable<Action>{
 		else
 			return false;
 	}
+	
+	public String toString() {
+		return m_stName;
+	}
 }

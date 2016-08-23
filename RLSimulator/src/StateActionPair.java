@@ -45,4 +45,8 @@ public class StateActionPair implements Comparable<StateActionPair>{
 		else
 			return false;
 	}
+	
+	public String toString() {
+		return "State: " + m_pstateCurrState.toString() + "  Action: " + m_pactCurrAction.toString();
+	}
 }
