@@ -74,7 +74,11 @@ public class RLActor extends Actor {
 		double dCurrQ;
 		Set<Action> prgactActionSet = m_prlsCurrSystem.pactGetActionSet();
 		for (Iterator<Action> pitActIt = prgactActionSet.iterator(); pitActIt.hasNext(); ) {
-			StateActionPair psapPossNextSAP = new StateActionPair(m_pstateCurrState,pitActIt.next());
+			Action pactPossAction = pitActIt.next();
+			if (!m_prlsCurrSystem.FCanDoAction(pactPossAction, m_pstateCurrState))
+				continue;
+			
+			StateActionPair psapPossNextSAP = new StateActionPair(m_pstateCurrState, pactPossAction);
 			
 			if (!m_mpsapdQFcn.containsKey(psapPossNextSAP))
 				m_mpsapdQFcn.put(psapPossNextSAP, m_dDefaultQ);

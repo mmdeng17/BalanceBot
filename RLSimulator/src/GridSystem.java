@@ -133,6 +133,37 @@ public class GridSystem extends DiscreteRLSystem {
 		return dCurrReward;
 	}
 	
+	public boolean FCanDoAction(Action pactCurrAction, State pstateCurrState) {
+		int iXCoord = (int) pstateCurrState.DGetStateValueFromIDim(0);
+		int iYCoord = (int) pstateCurrState.DGetStateValueFromIDim(1);
+		int iXChange = 0;
+		int iYChange = 0;
+		
+		switch(pactCurrAction.StGetName()) {
+		case "Up":
+			iYChange = -1;
+			break;
+		case "Down":
+			iYChange = 1;
+			break;
+		case "Left":
+			iXChange = -1;
+			break;
+		case "Right":
+			iXChange = 1;
+		}
+		
+		if ((iXCoord+iXChange)<0 || (iXCoord+iXChange)>=m_cXSize)
+			return false;
+		if ((iYCoord+iYChange)<0 || (iYCoord+iYChange)>=m_cYSize)
+			return false;
+		State pstateNextState = m_mpptstateStateGrid.get(new Point(iXCoord+iXChange, iYCoord+iYChange));
+		if (!pstateNextState.FIsValid())
+			return false;
+		
+		return true;
+	}
+	
 	public String toString() {
 		return toString(0, 0);
 	}

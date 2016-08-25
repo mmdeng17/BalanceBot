@@ -42,6 +42,10 @@ public abstract class RLSystem {
 		return m_prgactActionSet.contains(pactCurrAction);
 	}
 	
+	public boolean FCanDoAction(Action pactCurrAction, State pstateCurrState) {
+		return true;
+	}
+	
 	public Set<Action> pactGetActionSet() {
 		return m_prgactActionSet;
 	}
