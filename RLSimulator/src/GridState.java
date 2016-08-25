@@ -4,13 +4,13 @@ public class GridState extends State{
 	private int m_iYCoord;
 	
 	public GridState() {
-		super(true, true);
+		super(false, true);
 		m_iXCoord = -1;
 		m_iYCoord = -1;
 	}
 	
 	public GridState(int iXCoord, int iYCoord) {
-		super(true, true);
+		super(false, true);
 		
 		if (iXCoord<0)
 			throw new IllegalArgumentException("Invalid x coordinate.");

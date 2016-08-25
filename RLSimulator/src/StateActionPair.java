@@ -28,16 +28,6 @@ public class StateActionPair implements Comparable<StateActionPair>{
 	public void SetAction(Action pactCurrAction) {
 		m_pactCurrAction = pactCurrAction;
 	}
-
-	@Override
-	public int compareTo(StateActionPair psapOtherSAP) {
-		if (this.PStateGetState().equals(psapOtherSAP.PStateGetState()) && this.PActGetAction().equals(psapOtherSAP.PActGetAction()))
-			return 0;
-		else if (!this.PStateGetState().equals(psapOtherSAP.PStateGetState()))
-			return this.PStateGetState().compareTo(psapOtherSAP.PStateGetState());
-		else
-			return this.PActGetAction().compareTo(psapOtherSAP.m_pactCurrAction);
-	}
 	
 	public boolean equals(Object pobjOther) {
 		if (pobjOther.getClass().equals(this.getClass()))
@@ -47,6 +37,14 @@ public class StateActionPair implements Comparable<StateActionPair>{
 	}
 	
 	public String toString() {
-		return "State: " + m_pstateCurrState.toString() + "  Action: " + m_pactCurrAction.toString();
+		return "(" + m_pstateCurrState.toString() + ", " + m_pactCurrAction.toString() + ")";
+	}
+
+	@Override
+	public int compareTo(StateActionPair psapOtherSAP) {
+		if (m_pstateCurrState.equals(psapOtherSAP.PStateGetState()))
+			return m_pactCurrAction.compareTo(psapOtherSAP.PActGetAction());
+		else
+			return m_pstateCurrState.compareTo(psapOtherSAP.PStateGetState());
 	}
 }

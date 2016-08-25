@@ -1,14 +1,17 @@
+import java.awt.Point;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
-public class GridSystem extends RLSystem {
-	private GridState[][] m_prggsStateGrid;
-	private boolean[][] m_prgfStateValidGrid;
-	private int m_cXSize;
-	private int m_cYSize;
+public class GridSystem extends DiscreteRLSystem {
+	protected int m_cXSize;
+	protected int m_cYSize;
+	protected Map<Point,State> m_mpptstateStateGrid;
 	
 	public GridSystem() {
 		super();
-		m_prggsStateGrid = null;
-		m_prgfStateValidGrid = null;
 		m_cXSize = 0;
 		m_cYSize = 0;
 	}
@@ -29,106 +32,128 @@ public class GridSystem extends RLSystem {
 		
 		m_cXSize = cXSize;
 		m_cYSize = cYSize;
-		this.m_cNumStates = m_cXSize*m_cYSize;
-		m_prggsStateGrid = new GridState[m_cXSize][m_cYSize];
-		m_prgfStateValidGrid = new boolean[m_cXSize][m_cYSize];
+		m_cDim = 2;
+		m_mpptstateStateGrid = new HashMap<Point, State>();
 		
 		for (int iX = 0; iX<m_cXSize; iX++) {
 			for (int iY = 0; iY<m_cYSize; iY++) {
-				m_prggsStateGrid[iX][iY] = new GridState(iX,iY);
-				m_prgfStateValidGrid[iX][iY] = true;
+				State pstateNewState = PStateCreateState(iX, iY);
+				m_rgstateStates.put(pstateNewState, pstateNewState);
+				m_mpptstateStateGrid.put(new Point(iX, iY), pstateNewState);
 			}
 		}
 		
 		for (int iASX = 0; iASX<rgiASXCoord.length; iASX++) {
 			for (int iASY = 0; iASY<rgiASYCoord.length; iASY++) {
-				m_prggsStateGrid[iASX][iASY].m_fIsAbsorbing = true;
-				m_prgstateAbsorbingStates.add(m_prggsStateGrid[iASX][iASY]);
+				State pstateAbsState = m_mpptstateStateGrid.get(new Point(rgiASXCoord[iASX], rgiASYCoord[iASY]));
+				pstateAbsState.m_fIsAbsorbing = true;
 			}
 		}
-		
-		m_pstateCurrState = m_prggsStateGrid[iStartXCoord][iStartYCoord];
-		
+				
 		m_prgactActionSet.add(new Action("Up"));
 		m_prgactActionSet.add(new Action("Down"));
 		m_prgactActionSet.add(new Action("Left"));
 		m_prgactActionSet.add(new Action("Right"));
-		
-		m_prlactorActor.SetCurrState(m_pstateCurrState);
-		m_prlactorActor.SetCurrSystem(this);
 	}
 	
-	public boolean FTransition(Action pactCurrAction) {
-		if (super.FTransition(pactCurrAction))
+	public State PStateCreateState(int iX, int iY) {
+		State pstateNewState = new State();
+		pstateNewState.Init(this);
+		pstateNewState.SetStateValueFromIDim(0, iX);
+		pstateNewState.SetStateValueFromIDim(1, iY);
+		return pstateNewState;
+	}
+	
+	public int CGetXSize() {
+		return m_cXSize;
+	}
+	
+	public int CGetYSize() {
+		return m_cYSize;
+	}
+	
+	public State PstateGetStateAtXY(int iX, int iY) {
+		return m_mpptstateStateGrid.get(new Point(iX, iY));
+	}
+	
+	public boolean FTransition(RLActor pactorRLActor, Action pactCurrAction) {
+		if (super.FTransition(pactorRLActor, pactCurrAction))
 			return true;
 		
 		if (!this.FActionIsValid(pactCurrAction))
 			return false;
 
-		return FTransitionFcn(pactCurrAction);
+		return FTransitionFcn(pactorRLActor, pactCurrAction);
 	}
 	
-	protected boolean FTransitionFcn(Action pactCurrAction) {
+	protected boolean FTransitionFcn(RLActor pactorRLActor, Action pactCurrAction) {
 		// we already know whether or not action is valid from FTransition()
-		State pstateCurrState = m_pstateCurrState;
-		int iXCoord = ((GridState) m_pstateCurrState).IGetXCoord();
-		int iYCoord = ((GridState) m_pstateCurrState).IGetYCoord();
+		State pstateCurrState = pactorRLActor.PStateGetCurrState();
+		int iXCoord = (int) pstateCurrState.DGetStateValueFromIDim(0);
+		int iYCoord = (int) pstateCurrState.DGetStateValueFromIDim(1);
 		int iXChange = 0;
 		int iYChange = 0;
 		
 		switch(pactCurrAction.StGetName()) {
 		case "Up":
 			iYChange = -1;
+			break;
 		case "Down":
 			iYChange = 1;
+			break;
 		case "Left":
 			iXChange = -1;
+			break;
 		case "Right":
 			iXChange = 1;
 		}
 		
-		if ((iXCoord+iXChange)<0 || (iXCoord+iXChange)>m_cXSize)
+		if ((iXCoord+iXChange)<0 || (iXCoord+iXChange)>=m_cXSize)
 			return false;
-		if ((iYCoord+iYChange)<0 || (iYCoord+iYChange)>m_cYSize)
+		if ((iYCoord+iYChange)<0 || (iYCoord+iYChange)>=m_cYSize)
 			return false;
-		if (!m_prgfStateValidGrid[iXCoord+iXChange][iYCoord+iYChange])
+		State pstateNextState = m_mpptstateStateGrid.get(new Point(iXCoord+iXChange, iYCoord+iYChange));
+		if (!pstateNextState.FIsValid())
 			return false;
-			
-		m_pstateCurrState = m_prggsStateGrid[iXCoord+iXChange][iYCoord+iYChange];
-		State pstateNextState = m_pstateCurrState;
 		
-		m_prlactorActor.SetCurrState(m_pstateCurrState);
-		m_prlactorActor.AddReward(DGetRewardFcn(pstateCurrState, pactCurrAction, pstateNextState));
+		pactorRLActor.SetCurrState(pstateNextState);
+		double dCurrRew = DGetRewardFcn(pstateCurrState, pactCurrAction, pstateNextState);
+		pactorRLActor.AddReward(dCurrRew);
+		pactorRLActor.IncrementCurrTime();
+		pactorRLActor.UpdateQFcn(new StateActionPair(pstateCurrState, pactCurrAction), dCurrRew, pstateNextState);
+		
 		return true;
 	}
 	
 	public double DGetRewardFcn(State pstatePrevState, Action pactCurrAction, State pstateCurrState) {
-		double dCurrReward = 0.0;
-		for (int iAS = 0; iAS<m_prgstateAbsorbingStates.size(); iAS++) {
-			if (((GridState) pstateCurrState).equals((GridState) m_prgstateAbsorbingStates.get(iAS)))
-				dCurrReward = 1;
-		}
+		double dCurrReward = -1;
+		if (pstateCurrState.FIsAbsorbing())
+			dCurrReward = 0;
 		
 		return dCurrReward;
 	}
 	
 	public String toString() {
+		return toString(0, 0);
+	}
+		
+	public String toString(int iActorX, int iActorY) {
 		StringBuilder psbOutSB = new StringBuilder();
-		psbOutSB.append("t = ");
-		psbOutSB.append(m_dTimeStep);
-		psbOutSB.append("\n");
-
-		for (int iX = 0; iX<m_cXSize; iX++) {
-			for (int iY = 0; iY<m_cYSize; iY++) {
-				if (m_prggsStateGrid[iX][iY].equals(m_prlactorActor.PStateGetCurrState()))
+		
+		for (int iY = 0; iY<m_cYSize; iY++) {
+			for (int iX = 0; iX<m_cXSize; iX++) {
+				if (iX==iActorX && iY==iActorY)
 					psbOutSB.append("|o");
 				// TODO: fix this
-				else if (m_prgstateAbsorbingStates.contains(m_prggsStateGrid[iX][iY]))
+				else if (m_mpptstateStateGrid.get(new Point(iX, iY)).FIsAbsorbing())
 					psbOutSB.append("|x");
 				else
-					psbOutSB.append("| ");
+				psbOutSB.append("| ");
 			}
-			psbOutSB.append("|\n");
+			if (iY==(m_cXSize-1))
+				psbOutSB.append("|");
+			else
+				psbOutSB.append("|\n");
 		}
 		
 		return psbOutSB.toString();
